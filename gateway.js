@@ -131,12 +131,20 @@ router.route('/course/:course_name/:student_name')
     });
 
  //API endpoint to add course to a student
-router.route('/student/:student_name/:course_name/')
+router.route('/student/:student_name/:course_name')
 
     // create a new course (accessed at POST http://localhost:8080/api/course/:student_name/:course_id/)
     .post(function(req, res) {
         
         res.json({ message: 'Course added to Student!' });
+        //Logic to save the student to db
+        
+    })
+
+    // deletes a course(accessed at POST http://localhost:8080/api/course/:student_name/:course_id/)
+   .delete(function(req, res) {
+        
+        res.json({ message: 'Course dropped by Student!'});
         //Logic to save the student to db
         
     });
