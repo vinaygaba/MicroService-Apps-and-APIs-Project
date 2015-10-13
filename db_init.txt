@@ -1,0 +1,20 @@
+/* Run this command in your infinity_student_db */
+CREATE TABLE ms_student_tbl (
+sid SERIAL NOT NULL,
+fname VARCHAR(30) NOT NULL,
+lname VARCHAR(30) NOT NULL,
+phno VARCHAR(11),
+degree_level VARCHAR(10),
+year INT,
+address VARCHAR(100),
+PRIMARY KEY (sid)
+);
+
+/* Run this command in your infinity_course_db */
+CREATE TABLE ms_course_tbl (
+cid SERIAL PRIMARY KEY,
+courseNo VARCHAR(15) NOT NULL,
+prof VARCHAR(50),
+room VARCHAR(10),
+timings VARCHAR(100)
+);
