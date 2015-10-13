@@ -1,6 +1,6 @@
 {
-    "name": "MicroService Project",
-    "main": "server.js",
+    "name": "microservice_project",
+    "main": "gateway.js",
     "dependencies": {
         "express": "~4.0.0",
         "mongoose": "~3.6.13",
