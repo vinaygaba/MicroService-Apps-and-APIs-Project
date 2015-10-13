@@ -36,41 +36,83 @@ router.get('/', function(req, res) {
 // more routes for our API will happen here
 
 
+/************************************************************
+*
+* Student API Endpoints
+*
+*************************************************************/
+
+
 //API endpoint to add student to the students table
 router.route('/student')
 
     // create a new student (accessed at POST http://localhost:8080/api/student)
     .post(function(req, res) {
         
+        res.json({ message: 'Student created!' });
         //Logic to save the student to db
-
-        //Dummy Logic
-        var student = new Student();      // create a new instance of the Bear model
-        student.name = req.body.name;  // set the bears name (comes from the request)
-
-        // save the student and check for errors
-        student.save(function(err) {
-            if (err)
-                res.send(err);
-
-            res.json({ message: 'Student created!' });
-        });
         
     });
 
 
-//API end point to get student details (accessed at POST http://localhost:8080/api/student)
 
-	router.route('/student/:student_id')
+//API end point to get student details (accessed at POST http://localhost:8080/api/student/id)
+router.route('/student/:student_id')
 
-    // get the bear with that id (accessed at GET http://localhost:8080/api/bears/:bear_id)
+    // get the student with that id (accessed at GET http://localhost:8080/api/student/:student_id)
     .get(function(req, res) {
-        Student.findById(req.params.student_id, function(err, student) {
-            if (err)
-                res.send(err);
-            res.json(student);
-        });
+
+        res.json({ message: 'Student details!' });
+    })
+
+
+	// update the student with this id (accessed at PUT http://localhost:8080/api/student/:student_id)
+    .put(function(req, res) {
+
+    	res.json({ message: 'Student updated!' });
+
     });
+
+
+
+
+/************************************************************
+*
+* Course API Endpoints
+*
+*************************************************************/
+
+//API endpoint to add student to the students table
+router.route('/course')
+
+    // create a new course (accessed at POST http://localhost:8080/api/course)
+    .post(function(req, res) {
+        
+        res.json({ message: 'Course created!' });
+        //Logic to save the student to db
+        
+    });
+
+
+
+//API end point to get course details (accessed at POST http://localhost:8080/api/course/id)
+router.route('/course/:course_id')
+
+    // get the student with that id (accessed at GET http://localhost:8080/api/course/:course_id)
+    .get(function(req, res) {
+        res.json({ message: 'Course details!' });
+    })
+
+
+	// update the student with this id (accessed at PUT http://localhost:8080/api/course/:course_id)
+    .put(function(req, res) {
+
+    	res.json({ message: 'Course updated!' });
+
+    });
+
+
+
 
 
 // REGISTER OUR ROUTES -------------------------------
