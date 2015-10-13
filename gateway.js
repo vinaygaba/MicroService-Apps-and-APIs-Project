@@ -98,13 +98,13 @@ router.route('/course')
 //API end point to get course details (accessed at POST http://localhost:8080/api/course/id)
 router.route('/course/:course_id')
 
-    // get the student with that id (accessed at GET http://localhost:8080/api/course/:course_id)
+    // get the course with that id (accessed at GET http://localhost:8080/api/course/:course_id)
     .get(function(req, res) {
         res.json({ message: 'Course details!' });
     })
 
 
-	// update the student with this id (accessed at PUT http://localhost:8080/api/course/:course_id)
+	// update the course with this id (accessed at PUT http://localhost:8080/api/course/:course_id)
     .put(function(req, res) {
 
     	res.json({ message: 'Course updated!' });
@@ -113,11 +113,39 @@ router.route('/course/:course_id')
 
 
 
+/************************************************************
+*
+* Course - Student API Endpoints
+*
+*************************************************************/
+
+//API endpoint to add student to a course
+router.route('/course/:course_name/:student_name')
+
+    // create a new course (accessed at POST http://localhost:8080/api/course/:course_id/:student_name)
+    .post(function(req, res) {
+        
+        res.json({ message: 'Student added to course!' });
+        //Logic to save the student to db
+        
+    });
+
+ //API endpoint to add course to a student
+router.route('/student/:student_name/:course_name/')
+
+    // create a new course (accessed at POST http://localhost:8080/api/course/:student_name/:course_id/)
+    .post(function(req, res) {
+        
+        res.json({ message: 'Course added to Student!' });
+        //Logic to save the student to db
+        
+    });
 
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
+
 
 // START THE SERVER
 // =============================================================================
