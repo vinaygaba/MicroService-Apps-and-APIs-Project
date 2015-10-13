@@ -1,4 +1,4 @@
-/** Run this command in your infinity_student_db **/
+/* Run this command in your infinity_student_db */
 CREATE TABLE ms_student_tbl (
 sid SERIAL NOT NULL,
 fname VARCHAR(30) NOT NULL,
