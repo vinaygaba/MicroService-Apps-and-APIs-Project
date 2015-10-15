@@ -7,6 +7,7 @@
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
+var course = require('./course.js');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -50,31 +51,45 @@ router.route('/course')
     // create a new course (accessed at POST http://localhost:16390/api/course)
     .post(function(req, res) {
         
-        res.json({ message: 'Course created!' });
-        //Logic to save the course to db
+          course.addCourse(req);
+
+               res.status(200).send();
         
     });
 
 
 
 //API end point to get course details (accessed at POST http://localhost:16390/api/course/id)
-router.route('/course/:course_id')
+router.route('/course/:course_no')
 
     // get the student with that id (accessed at GET http://localhost:16390/api/course/:course_id)
     .get(function(req, res) {
-    	// Logic to show course details
-        res.json({ message: 'Course details!' });
+    	
+        course.getCourseDetails(req,res,handleResult);
+        function handleResult(response, err)
+        {
+            if(err)
+            {
+                console.error(err.stack || err.message);
+                return;
+            }
+            res.json(response.body);
+           console.log("Request handled");
+        }// Logic to show course details
     })
 
 
 	// update the student with this id (accessed at PUT http://localhost:16390/api/course/:course_id)
     .put(function(req, res) {
     	//Logic to upadte student details
+         course.updateCourse(req);
     	res.json({ message: 'Course updated!' });
 
     });
 
 
+  
+  
 
 
 
