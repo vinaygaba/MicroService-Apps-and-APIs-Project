@@ -35,24 +35,26 @@ exports.updateCourse = function(req)
 {
 console.log('Connected to database in update');
 
-var queryString;
-console.log(req.body[0]);
-console.log(req.params[0]);
-var paramName = req.params[0];
-console.log(req.params.paramName);
+var queryString= 'update ms_course_tbl set ';
+var courseno = req.params.course_no;
 
-// for (var param in req.query) {
-//     if (req.query.hasOwnProperty(param)) {
-//         Console.log(param);
-//         Console.log(req.query.param);
-//     }
-// }
+for (var key in req.body) {
+  if (req.body.hasOwnProperty(key)) {
+    console.log(key + " -> " + req.body[key]);
+    queryString = queryString  + key + ' = ' + "'"+req.body[key] + "'" + ',';
 
-// var query = client.query("UPDATE ms_course_tbl SET where courseno=$1",[req.params.course_no]);
-// query.on('end', function(result) { 
-// console.log("Row successfully inserted");
+  }
+}
+queryString = queryString.substring(0, queryString.length - 1);
+queryString = queryString + ' where courseno = $1';
+
+console.log(queryString);
+
+var query = client.query(queryString, [courseno]);
+query.on('end', function(result) { 
+console.log("Row successfully updated");
 	//client.end(); 
-//});
+});
 }
 
 

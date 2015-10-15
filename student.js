@@ -27,3 +27,30 @@ res.json({fname:row.fname, lname:row.lname, sid:row.id, phno:row.phno, degree:ro
 	//client.end();
 	 });
 }
+
+
+exports.updateStudent = function(req)
+{
+console.log('Connected to database in update');
+
+var queryString= 'update ms_student_tbl set ';
+var student_lname = req.params.student_id;
+
+for (var key in req.body) {
+  if (req.body.hasOwnProperty(key)) {
+    console.log(key + " -> " + req.body[key]);
+    queryString = queryString  + key + ' = ' + "'"+req.body[key] + "'" + ',';
+
+  }
+}
+queryString = queryString.substring(0, queryString.length - 1);
+queryString = queryString + ' where lname = $1';
+
+console.log(queryString);
+
+var query = client.query(queryString, [student_lname]);
+query.on('end', function(result) { 
+console.log("Row successfully updated");
+	//client.end(); 
+});
+}

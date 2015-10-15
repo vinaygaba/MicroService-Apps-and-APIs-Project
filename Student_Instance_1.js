@@ -86,6 +86,7 @@ router.route('/student/:student_id')
 	// update the student with this id (accessed at PUT http://localhost:16386/api/student/:student_id)
     .put(function(req, res) {
     	//Logic to update student details here
+        student.updateStudent(req);
     	res.json({ message: 'Student updated!' });
 
     });
