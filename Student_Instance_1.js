@@ -8,12 +8,17 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 
+var student = require('./student.js');
+
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
 var port = process.env.PORT || 16386;        // set our port
+
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -49,9 +54,9 @@ router.route('/student')
 
     // create a new student (accessed at POST http://localhost:16386/api/student)
     .post(function(req, res) {
-               res.json({ message: 'Student with  Instance 1 created!' });
-        //Logic to save the student to DB
-        
+              student.addStudent(req);
+              res.status(200).send();
+        //Logic to save the student to DB      
     });
 
 
@@ -61,23 +66,43 @@ router.route('/student/:student_id')
 
     // get the student with that id (accessed at GET http://localhost:16386/api/student/:student_id)
     .get(function(req, res) {
+
     	// Logic to show student here
+			student.getStudentDetails(req,res,handleResult);
+			function handleResult(response, err)
+				{
+					if(err)
+					{
+						console.error(err.stack || err.message);
+						return;
+					}
+					res.json(response.body);
+					console.log("Request handled");
+				}
         res.json({ message: 'Student details from Student Instance 1!' });
     })
     
-      // get the student with that id (accessed at GET http://localhost:16386/api/student/:student_id)
-    .delete(function(req, res) {
+     
+     .delete(function(req, res) {
     	// Logic to show student here
         res.json({ message: 'Student details from Student Instance 1 deleted!' });
     })
+    	// Logic to show student here
+       // res.json({ message: 'Student details from Student Instance 1!' });
+
 
 
 	// update the student with this id (accessed at PUT http://localhost:16386/api/student/:student_id)
     .put(function(req, res) {
     	//Logic to update student details here
-    	res.json({ message: 'Student updated! 1' });
+
+
+        student.updateStudent(req);
+    	res.json({ message: 'Student updated!' });
+
 
     });
+
 
 
 router.route('/studentcourse')
