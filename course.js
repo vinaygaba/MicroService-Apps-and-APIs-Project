@@ -58,3 +58,44 @@ console.log("Row successfully updated");
 }
 
 
+exports.deleteCourse = function(req)
+{
+
+	console.log('Connected to database to delete student');
+
+	var courseno = req.params.courseno;
+
+	var queryForCourseDatabase = 'Delete from ms_course_tbl where courseno = $1';
+
+	var courseDeleteQuery = client.query(queryForCourseDatabase, [courseno]);
+	query.on('end', function(result) { 
+	console.log("Row successfully deleted");
+	//client.end(); 
+});
+	//client.end(); 
+
+
+}
+
+
+
+exports.deleteStudentFromCourse = function(req)
+{
+
+var courseno = req.params.courseno;
+var lname = req.params.lname;
+
+var queryForStudentCourseDatabase = 'Delete from ms_course_student_tbl where lname = $1 and courseno = $2';
+
+var studentFromCourseDeleteQuery = client.query(queryForStudentCourseDatabase, [lname,courseno]);
+	query.on('end', function(result) { 
+	console.log("Row successfully deleted");
+	//client.end(); 
+});
+
+}
+
+
+
+
+

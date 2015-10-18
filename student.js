@@ -65,14 +65,14 @@ exports.deleteStudent = function(req)
 
 	var queryForStudentDatabase = 'Delete from ms_student_tbl where lname = $1';
 
-	var queryForRelationshipDatabase =  'Delete from ms_student_tbl where lname = $1';
+	var queryForRelationshipDatabase =  'Delete from ms_student_course_tbl where lname = $1';
 
-	var query = client.query(queryForStudentDatabase, [student_lname]);
+	var query = client.query(queryForRelationshipDatabase, [student_lname]);
 	query.on('end', function(result) { 
 	console.log("Row successfully deleted");
 
 
-	var relationshipDeleteQuery = client.query(queryForRelationshipDatabase, [student_lname]);
+	var relationshipDeleteQuery = client.query(queryForStudentDatabase, [student_lname]);
 	query.on('end', function(result) { 
 	console.log("Row successfully deleted");
 	//client.end(); 
@@ -80,6 +80,24 @@ exports.deleteStudent = function(req)
 	//client.end(); 
 });
 
+
+}
+
+
+
+exports.deleteCourseFromStudent = function(req)
+{
+
+var courseno = req.params.courseno;
+var lname = req.params.lname;
+
+var queryForCourseStudentDatabase = 'Delete from ms_student_course_tbl where lname = $1 and courseno = $2';
+
+var courseFromStudentDeleteQuery = client.query(queryForCourseStudentDatabase, [lname,courseno]);
+	query.on('end', function(result) { 
+	console.log("Row successfully deleted");
+	//client.end(); 
+});
 
 }
 
