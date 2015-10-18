@@ -54,3 +54,36 @@ console.log("Row successfully updated");
 	//client.end(); 
 });
 }
+
+
+exports.deleteStudent = function(req)
+{
+
+	console.log('Connected to database to delete student');
+
+	var student_lname = req.params.student_id;
+
+	var queryForStudentDatabase = 'Delete from ms_student_tbl where lname = $1';
+
+	var queryForRelationshipDatabase =  'Delete from ms_student_tbl where lname = $1';
+
+	var query = client.query(queryForStudentDatabase, [student_lname]);
+	query.on('end', function(result) { 
+	console.log("Row successfully deleted");
+
+
+	var relationshipDeleteQuery = client.query(queryForRelationshipDatabase, [student_lname]);
+	query.on('end', function(result) { 
+	console.log("Row successfully deleted");
+	//client.end(); 
+});
+	//client.end(); 
+});
+
+
+}
+
+
+
+
+

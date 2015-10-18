@@ -18,3 +18,18 @@ prof VARCHAR(50),
 room VARCHAR(10),
 timings VARCHAR(100)
 );
+
+
+/* Run this command in your infinity_student_db */
+CREATE TABLE ms_student_course_tbl (
+lname VARCHAR(30) references ms_student_tbl(lname),
+courseNo VARCHAR(30) references ms_course_tbl(courseNo),
+PRIMARY KEY (lname,courseN0)
+);
+
+/* Run this command in your infinity_student_db */
+CREATE TABLE ms_course_student_tbl (
+courseNo VARCHAR(30) references ms_course_tbl(courseNo),
+lname VARCHAR(30) references ms_student_tbl(lname),
+PRIMARY KEY (courseNo,name)
+);
