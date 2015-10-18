@@ -80,23 +80,43 @@ router.route('/student/:student_id')
     });
 
 
-router.route('/studentcourse')
-
-// create a new student (accessed at POST http://localhost:16386/api/student)
-.post(function(req, res) {
-           res.json({ message: "Course added to student 2" });
-    //Logic to save the student to DB
-    
-});
-
-router.route('/studentcourse/:student_id/:course_id')
+router.route('/coursestudent')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
-.delete(function(req, res) {
-      res.json({ message: "Course added to student" });
+.post(function(req, res) {
+	
+	request({ url : "http://localhost/16390/api/course/" + req.params.course_id,
+ 		method : "GET", 	  	
+ 	}, function (error, response, body) {
+  if (!error && response.statusCode == 200) {
+  	invokeandProcessResponse(req , function(err, result){
+  	    if(err){
+  	      res.send(500, { error: 'something blew up' });
+  	    } else {
+  	      res.send(result);
+  	    }
+  	  });
+      }
+  else
+  	{
+  	res.json({message : "Course does not exist"});
+  	}
 //Logic to save the student to DB
 
 });
+
+router.route('/coursestudent/:course_id/:student_id')
+
+//create a new student (accessed at POST http://localhost:16386/api/student)
+.delete(function(req, res) {
+	invokeandProcessResponse(req , function(err, result){
+	    if(err){
+	      res.send(500, { error: 'something blew up' });
+	    } else {
+	      res.send(result);
+	    }
+	  });
+  });
 
 
 
