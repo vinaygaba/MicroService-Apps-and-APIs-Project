@@ -14,6 +14,19 @@ console.log("Row successfully inserted");
 });
 }
 
+exports.addCoursetoStudent = function(req)
+{
+
+var lname = req.params.lname;
+var courseno = req.params.courseno;
+
+var query = client.query("insert into ms_student_course_tbl values($1, $2)", [lname,courseno]);
+query.on('end', function(result) { 
+console.log("Row successfully inserted");
+	//client.end(); 
+});
+}
+
 
 exports.getStudentDetails = function(req,res,callback)
 {

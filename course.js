@@ -16,6 +16,20 @@ console.log("Row successfully inserted");
 }
 
 
+
+exports.addStudentToCourse = function(req)
+{
+
+var lname = req.params.lname;
+var courseno = req.params.courseno;
+
+var query = client.query("insert into ms_course_student_tbl values($1, $2)", [courseno,lname]);
+query.on('end', function(result) { 
+console.log("Row successfully inserted");
+	//client.end(); 
+});
+}
+
 exports.getCourseDetails = function(req,res,callback)
 {
 console.log('Connected to database');
@@ -87,7 +101,7 @@ var lname = req.params.lname;
 
 var queryForStudentCourseDatabase = 'Delete from ms_course_student_tbl where lname = $1 and courseno = $2';
 
-var studentFromCourseDeleteQuery = client.query(queryForStudentCourseDatabase, [lname,courseno]);
+var studentFromCourseDeleteQuery = client.query(queryForStudentCourseDatabase, [courseno,lname]);
 	query.on('end', function(result) { 
 	console.log("Row successfully deleted");
 	//client.end(); 
