@@ -52,16 +52,14 @@ router.route('/course')
     // create a new course (accessed at POST http://localhost:16390/api/course)
     .post(function(req, res) {      
           course.addCourse(req);
-          res.status(200).send();
-
-        
+          res.json({message : 'Course added!'});        
     });
 
 
 
 //API end point to get course details (accessed at POST http://localhost:16390/api/course/id)
 
-router.route('/course/:course_no')
+router.route('/course/:course_id')
 
     // get the student with that id (accessed at GET http://localhost:16390/api/course/:course_id)
     .get(function(req, res) {
@@ -87,7 +85,7 @@ router.route('/course/:course_no')
     })
     .delete(function(req, res) {
     	//Logic to upadte student details
-         
+         course.deleteCourse(req);
     	res.json({ message: 'Course deleted!' });
 
     });
@@ -99,40 +97,21 @@ router.route('/studentcourse')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
-	request({ url : "http://localhost/16385/api/student/" + req.params.student_id,
-   		method : "GET", 	  	
-   	}, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-    	invokeandProcessResponse(req , function(err, result){
-    	    if(err){
-    	      res.send(500, { error: 'something blew up' });
-    	    } else {
-    	      res.send(result);
-    	    }
-    	  });
-        }
-    else
-    	{
-    	res.json({message : "Student does not exist"});
-    	}
- //Logic to save the student to DB
- 
-});
+	
+          course.addStudentToCourse(req);
+          res.json({message : 'Student added to course!'});     
+    });
 
 router.route('/studentcourse/:student_id/:course_id')
 
+
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .delete(function(req, res) {
-	invokeandProcessResponse(req , function(err, result){
-	    if(err){
-	      res.send(500, { error: 'something blew up' });
-	    } else {
-	      res.send(result);
-	    }
+	
+    course.deleteStudentFromCourse(req);
+    res.json({message : 'Student deleted from course!'});
 	  });
-    }
 
-});
 
   
   
