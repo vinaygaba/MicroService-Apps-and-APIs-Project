@@ -36,7 +36,7 @@ router.use(function(req, res, next) {
 // test route to make sure everything is working (accessed at GET http://localhost:16386/api)
 router.get('/', function(req, res) {
    // Logic to show student here
-	 res.json({ message: 'Welcome to our student Instance 1 api!!' }); 
+	 res.json({ message: 'Welcome to our student Instance 1 api!!' });
 });
 
 // more routes for our API will happen here
@@ -70,7 +70,7 @@ router.route('/student')
         }
         }
     });
-       
+
 
 
 
@@ -93,10 +93,10 @@ router.route('/student/:student_id')
 					console.log("Request handled");
 				}
     })
-    
-     
+
+
      .delete(function(req, res) {
-    	
+
         student.deleteStudent(req);
         res.json({ message: 'Student details from Student Instance 1 deleted!' });
     })
@@ -122,7 +122,7 @@ router.route('/coursestudent')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
-	
+
   student.addCoursetoStudent(req);
   res.json({ message: 'Added course to student'});
 
@@ -133,7 +133,7 @@ router.route('/coursestudent/:course_id/:student_id')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .delete(function(req, res) {
-	
+
   student.deleteCourseFromStudent(req);
     res.json({ message: 'Deleted course from student'});
   });

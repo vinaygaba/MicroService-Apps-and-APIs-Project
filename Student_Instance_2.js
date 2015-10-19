@@ -8,12 +8,17 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 
+var student = require('./student.js');
+
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
 var port = process.env.PORT || 16387;        // set our port
+
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -31,7 +36,7 @@ router.use(function(req, res, next) {
 // test route to make sure everything is working (accessed at GET http://localhost:16386/api)
 router.get('/', function(req, res) {
    // Logic to show student here
-	 res.json({ message: 'Welcome to our student Instance 2 api!!' }); 
+	 res.json({ message: 'Welcome to our student Instance 1 api!!' });
 });
 
 // more routes for our API will happen here
@@ -49,10 +54,23 @@ router.route('/student')
 
     // create a new student (accessed at POST http://localhost:16386/api/student)
     .post(function(req, res) {
-               res.json({ message: 'Student with  Instance 2 created!' });
-        //Logic to save the student to DB
-        
+              student.addStudent(req, handleresult);
+              function handleResult(result, err)
+        {
+          if(err)
+          {
+            console.error(err.stack || err.message);
+            res.json({message : 'Error in adding student'});
+            return;
+          }
+          else
+          {
+          res.json({message : 'Successfully added student'});
+          console.log("Request handled");
+        }
+        }
     });
+
 
 
 
@@ -61,62 +79,65 @@ router.route('/student/:student_id')
 
     // get the student with that id (accessed at GET http://localhost:16386/api/student/:student_id)
     .get(function(req, res) {
+
     	// Logic to show student here
-        res.json({ message: 'Student details from Student Instance 2!' });
+			student.getStudentDetails(req,res,handleResult);
+			function handleResult(response, err)
+				{
+					if(err)
+					{
+						console.error(err.stack || err.message);
+						return;
+					}
+					res.json(response.body);
+					console.log("Request handled");
+				}
     })
-    
-      // get the student with that id (accessed at GET http://localhost:16386/api/student/:student_id)
-    .delete(function(req, res) {
+
+
+     .delete(function(req, res) {
+
+        student.deleteStudent(req);
+        res.json({ message: 'Student details from Student Instance 1 deleted!' });
+    })
     	// Logic to show student here
-        res.json({ message: 'Student details from Student Instance 2 deleted!' });
-    })
+       // res.json({ message: 'Student details from Student Instance 1!' });
+
 
 
 	// update the student with this id (accessed at PUT http://localhost:16386/api/student/:student_id)
     .put(function(req, res) {
     	//Logic to update student details here
-    	res.json({ message: 'Student updated 2!' });
+
+      student.updateStudent(req);
+    	res.json({ message: 'Student updated!' });
+
 
     });
+
+
 
 
 router.route('/coursestudent')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
-	
-	request({ url : "http://localhost/16390/api/course/" + req.params.course_id,
- 		method : "GET", 	  	
- 	}, function (error, response, body) {
-  if (!error && response.statusCode == 200) {
-  	invokeandProcessResponse(req , function(err, result){
-  	    if(err){
-  	      res.send(500, { error: 'something blew up' });
-  	    } else {
-  	      res.send(result);
-  	    }
-  	  });
-      }
-  else
-  	{
-  	res.json({message : "Course does not exist"});
-  	}
-//Logic to save the student to DB
+
+  student.addCoursetoStudent(req);
+  res.json({ message: 'Added course to student'});
 
 });
+
 
 router.route('/coursestudent/:course_id/:student_id')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .delete(function(req, res) {
-	invokeandProcessResponse(req , function(err, result){
-	    if(err){
-	      res.send(500, { error: 'something blew up' });
-	    } else {
-	      res.send(result);
-	    }
-	  });
+
+  student.deleteCourseFromStudent(req);
+    res.json({ message: 'Deleted course from student'});
   });
+
 
 
 
