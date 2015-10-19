@@ -8,7 +8,9 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var course = require('./course.js');
-
+var redis = require('redis');
+var config = require('./config_course.json');
+var arr = Object.keys(config).map(function(k) { return config[k] });
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -33,7 +35,7 @@ router.use(function(req, res, next) {
 // test route to make sure everything is working (accessed at GET http://localhost:16390/api)
 router.get('/', function(req, res) {
    // Checking Course Instance
-	 res.json({ message: 'Welcome to our Course api!!' }); 
+	 res.json({ message: 'Welcome to our Course api!!' });
 });
 
 // more routes for our API will happen here
@@ -50,11 +52,11 @@ router.get('/', function(req, res) {
 router.route('/course')
 
     // create a new course (accessed at POST http://localhost:16390/api/course)
-    .post(function(req, res) {      
+    .post(function(req, res) {
           course.addCourse(req);
           res.status(200).send();
 
-        
+
     });
 
 
@@ -65,7 +67,7 @@ router.route('/course/:course_no')
 
     // get the student with that id (accessed at GET http://localhost:16390/api/course/:course_id)
     .get(function(req, res) {
-    	
+
         course.getCourseDetails(req,res,handleResult);
         function handleResult(response, err)
         {
@@ -87,7 +89,7 @@ router.route('/course/:course_no')
     })
     .delete(function(req, res) {
     	//Logic to upadte student details
-         
+
     	res.json({ message: 'Course deleted!' });
 
     });
@@ -100,7 +102,7 @@ router.route('/studentcourse')
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
 	request({ url : "http://localhost/16385/api/student/" + req.params.student_id,
-   		method : "GET", 	  	
+   		method : "GET",
    	}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
     	invokeandProcessResponse(req , function(err, result){
@@ -116,7 +118,7 @@ router.route('/studentcourse')
     	res.json({message : "Student does not exist"});
     	}
  //Logic to save the student to DB
- 
+
 });
 
 router.route('/studentcourse/:student_id/:course_id')
@@ -134,9 +136,47 @@ router.route('/studentcourse/:student_id/:course_id')
 
 });
 
-  
-  
+// Listening for RI scenes
+var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+subscriber.on('connect', function() {
+    console.log('Connected to Subscriber Redis');
+});
 
+var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+publisher.on('connect', function() {
+    console.log('Connected to Publisher Redis');
+});
+
+subscriber.on("message", function(channel, message) {
+  console.log("Message '" + message + "' on channel '" + channel + "' arrived!")
+  console.log(message);
+  parsedMessage = JSON.parse(message);
+  //message event, origin, studentname and coursename
+  var baseUrl = config.baseurl;
+  var messageEvent = parsedMessage.event;
+  var messageOrigin = parsedMessage.origin;
+  var studentLname = parsedMessage.studentLname;
+  var courseNo = parsedMessage.courseNo;
+
+  for(var key in arr){
+		if(messageEvent == arr[key].event){
+      if (arr[key].req_method == "DELETE")
+        url = baseurl + arr[key].publicurl + "/" + studentLname + "/" + courseNo;
+      else {
+        url = baseurl + arr[key].publicurl;
+      }
+      request({ url : url,
+   		   method : arr[key].req_method,
+   		   json : JSON.stringify(message)
+   	}, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+     callback(null, response.body);
+    } else {
+      callback(error);
+    }
+  }
+}
+});
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
@@ -146,3 +186,5 @@ app.use('/api', router);
 // =============================================================================
 app.listen(port);
 console.log('Magic happens on port ' + port);
+
+subscriber.subscribe("course");
