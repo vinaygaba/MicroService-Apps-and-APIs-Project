@@ -54,21 +54,9 @@ router.route('/student')
 
     // create a new student (accessed at POST http://localhost:16386/api/student)
     .post(function(req, res) {
-              student.addStudent(req, handleresult);
-              function handleResult(result, err)
-        {
-          if(err)
-          {
-            console.error(err.stack || err.message);
-            res.json({message : 'Error in adding student'});
-            return;
-          }
-          else
-          {
+         student.addStudent(req);
           res.json({message : 'Successfully added student'});
           console.log("Request handled");
-        }
-        }
     });
 
 

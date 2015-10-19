@@ -1,15 +1,15 @@
 var pg = require('pg');
-var connectionString = 'postgres://postgres:postgres@localhost:5433/infinity_course_db';
+var connectionString = 'postgres://postgres:postgres@localhost:5432/infinity_course_db';
 var client = new pg.Client(connectionString);
 var redis = require('redis');
 client.connect();
 
-var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var subscriber = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 subscriber.on('connect', function() {
     console.log('Connected to Subscriber Redis');
 });
 
-var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 publisher.on('connect', function() {
     console.log('Connected to Publisher Redis');
 });

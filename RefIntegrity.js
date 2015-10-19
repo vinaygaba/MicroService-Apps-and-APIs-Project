@@ -5,12 +5,12 @@ var config = require('./config.json');
 var arr = Object.keys(config).map(function(k) { return config[k] });
 //console.log(arr[0].listener);
 
-var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var subscriber = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 subscriber.on('connect', function() {
     console.log('Connected to Subscriber Redis');
 });
 
-var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 publisher.on('connect', function() {
     console.log('Connected to Publisher Redis');
 });
@@ -19,7 +19,7 @@ publisher.on('connect', function() {
 
 subscriber.on("message", function(channel, message) {
 
-	messageEvent = JSON.parse(message);		
+	messageEvent = JSON.parse(message);
 	//console.log(messageEvent);
 
 	origin_from_message = messageEvent.origin;
@@ -41,4 +41,3 @@ subscriber.on("message", function(channel, message) {
 	});
 
 subscriber.subscribe("RI");
-

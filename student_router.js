@@ -9,6 +9,7 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var request = require('request');
 var http = require('http');
+var redis = require('redis');
 var config = require('./config_course.json');
 var arr = Object.keys(config).map(function(k) { return config[k] });
 
@@ -53,7 +54,7 @@ var invokeandProcessResponse = function(req, callback){
 	bodyParameters = req.body;
 	if(req.method == "POST" )
 		{
-			firstCharacterString = bodyParameters['lastname'];
+			firstCharacterString = bodyParameters['lname'];
 
 		}
 	else if (req.method == "GET" || req.method == "PUT" || req.method == "DELETE")
@@ -195,12 +196,12 @@ router.route('/studentcourse/:student_id/:course_id')
 
 });
 
-var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var subscriber = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 subscriber.on('connect', function() {
     console.log('Connected to Subscriber Redis');
 });
 
-var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 publisher.on('connect', function() {
     console.log('Connected to Publisher Redis');
 });
@@ -232,7 +233,8 @@ subscriber.on("message", function(channel, message) {
     } else {
       callback(error);
     }
-  }
+  });
+}
 }
 });
 

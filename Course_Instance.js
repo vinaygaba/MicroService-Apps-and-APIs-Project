@@ -55,7 +55,7 @@ router.route('/course')
     .post(function(req, res) {
           course.addCourse(req);
 
-          res.json({message : 'Course added!'});        
+          res.json({message : 'Course added!'});
 
     });
 
@@ -102,9 +102,9 @@ router.route('/studentcourse')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
-	
+
           course.addStudentToCourse(req);
-          res.json({message : 'Student added to course!'});     
+          res.json({message : 'Student added to course!'});
     });
 
 router.route('/studentcourse/:student_id/:course_id')
@@ -112,19 +112,19 @@ router.route('/studentcourse/:student_id/:course_id')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .delete(function(req, res) {
-	
+
     course.deleteStudentFromCourse(req);
     res.json({message : 'Student deleted from course!'});
 	  });
 
 
 // Listening for RI scenes
-var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var subscriber = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 subscriber.on('connect', function() {
     console.log('Connected to Subscriber Redis');
 });
 
-var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 publisher.on('connect', function() {
     console.log('Connected to Publisher Redis');
 });
@@ -144,9 +144,8 @@ subscriber.on("message", function(channel, message) {
 		if(messageEvent == arr[key].event){
       if (arr[key].req_method == "DELETE")
         url = baseurl + arr[key].publicurl + "/" + studentLname + "/" + courseNo;
-      else {
+      else
         url = baseurl + arr[key].publicurl;
-      }
       request({ url : url,
    		   method : arr[key].req_method,
    		   json : JSON.stringify(message)
@@ -156,7 +155,8 @@ subscriber.on("message", function(channel, message) {
     } else {
       callback(error);
     }
-  }
+  });
+}
 }
 });
 

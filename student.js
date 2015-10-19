@@ -1,29 +1,28 @@
 var pg = require('pg');
-var connectionString = 'postgres://postgres:postgres@localhost:5433/infinity_student_db';
+var connectionString = 'postgres://postgres:postgres@localhost:5432/infinity_student_db';
 var redis = require('redis');
 var client = new pg.Client(connectionString);
 client.connect();
 
-var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var subscriber = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 subscriber.on('connect', function() {
     console.log('Connected to Subscriber Redis');
 });
 
-var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 publisher.on('connect', function() {
     console.log('Connected to Publisher Redis');
 });
 
 
 
-exports.addStudent = function(req, callback)
+exports.addStudent = function(req)
 {
 console.log('Connected to database');
 console.log(req.body.id);
 var query = client.query("insert into ms_student_tbl values($1, $2, $3, $4, $5, $6, $7)", [req.body.sid, req.body.fname, req.body.lname, req.body.phno, req.body.degree, req.body.year, req.body.address]);
 query.on('end', function(result) {
 console.log("Row successfully inserted");
-callback(result);
 });
 }
 
