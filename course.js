@@ -34,8 +34,8 @@ query.on('end', function(result) {
 	message =   {
 									"origin":"course" ,
 									"event":"student_added_to_course",
-									"studentLname" : lname,
-									"courseNo" : courseno
+									"lname" : lname,
+									"courseno" : courseno
 							};
 		 console.log(typeof(message.origin));
 		 publisher.publish('RI', JSON.stringify(message));
@@ -109,8 +109,8 @@ exports.deleteCourse = function(req)
 		message =   {
 										"origin":"course" ,
 										"event":"student_removed_from_course",
-										"studentLname" : "all",
-										"courseNo" : courseno
+										"lname" : "all",
+										"courseno" : courseno
 								};
 			 console.log(typeof(message.origin));
 			 publisher.publish('RI', JSON.stringify(message));
@@ -146,8 +146,8 @@ var query = client.query(queryForStudentCourseDatabase, [lname,courseno]);
 		message =   {
 										"origin":"course" ,
 										"event":"student_removed_from_course",
-										"studentLname" : lname,
-										"courseNo" : courseno
+										"lname" : lname,
+										"courseno" : courseno
 								};
 			 console.log(typeof(message.origin));
 			 publisher.publish('RI', JSON.stringify(message));
