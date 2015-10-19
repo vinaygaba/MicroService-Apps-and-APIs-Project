@@ -3,27 +3,26 @@ var connectionString = 'postgres://postgres:postgres@localhost:5433/infinity_stu
 var client = new pg.Client(connectionString);
 client.connect();
 
-exports.addStudent = function(req)
+exports.addStudent = function(req, callback)
 {
 console.log('Connected to database');
 console.log(req.body.id);
 var query = client.query("insert into ms_student_tbl values($1, $2, $3, $4, $5, $6, $7)", [req.body.sid, req.body.fname, req.body.lname, req.body.phno, req.body.degree, req.body.year, req.body.address]);
 query.on('end', function(result) { 
 console.log("Row successfully inserted");
-	//client.end(); 
+callback(result);
 });
 }
 
 exports.addCoursetoStudent = function(req)
 {
 
-var lname = req.params.lname;
-var courseno = req.params.courseno;
+var lname = req.body.lname;
+var courseno = req.body.courseno;
 
 var query = client.query("insert into ms_student_course_tbl values($1, $2)", [lname,courseno]);
 query.on('end', function(result) { 
 console.log("Row successfully inserted");
-	//client.end(); 
 });
 }
 
@@ -37,14 +36,12 @@ query.on('row', function(row) {
 console.log('Row received') ;
 res.json({fname:row.fname, lname:row.lname, sid:row.id, phno:row.phno, degree:row.degree, year:row.year, address:row.address});
 	callback(res);
-	//client.end();
 	 });
 }
 
 
 exports.updateStudent = function(req)
 {
-console.log('Connected to database in update');
 
 var queryString= 'update ms_student_tbl set ';
 var student_lname = req.params.student_id;
@@ -88,11 +85,8 @@ exports.deleteStudent = function(req)
 	var relationshipDeleteQuery = client.query(queryForStudentDatabase, [student_lname]);
 	query.on('end', function(result) { 
 	console.log("Row successfully deleted");
-	//client.end(); 
 });
-	//client.end(); 
 });
-
 
 }
 
@@ -101,12 +95,12 @@ exports.deleteStudent = function(req)
 exports.deleteCourseFromStudent = function(req)
 {
 
-var courseno = req.params.courseno;
-var lname = req.params.lname;
+var courseno = req.params.course_id;
+var lname = req.params.student_id;
 
 var queryForCourseStudentDatabase = 'Delete from ms_student_course_tbl where lname = $1 and courseno = $2';
 
-var courseFromStudentDeleteQuery = client.query(queryForCourseStudentDatabase, [lname,courseno]);
+var query = client.query(queryForCourseStudentDatabase, [lname,courseno]);
 	query.on('end', function(result) { 
 	console.log("Row successfully deleted");
 	//client.end(); 

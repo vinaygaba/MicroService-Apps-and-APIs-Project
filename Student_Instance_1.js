@@ -54,10 +54,23 @@ router.route('/student')
 
     // create a new student (accessed at POST http://localhost:16386/api/student)
     .post(function(req, res) {
-              student.addStudent(req);
-              res.status(200).send();
-        //Logic to save the student to DB      
+              student.addStudent(req, handleresult);
+              function handleResult(result, err)
+        {
+          if(err)
+          {
+            console.error(err.stack || err.message);
+            res.json({message : 'Error in adding student'});
+            return;
+          }
+          else
+          {
+          res.json({message : 'Successfully added student'});
+          console.log("Request handled");
+        }
+        }
     });
+       
 
 
 
@@ -79,12 +92,12 @@ router.route('/student/:student_id')
 					res.json(response.body);
 					console.log("Request handled");
 				}
-        res.json({ message: 'Student details from Student Instance 1!' });
     })
     
      
      .delete(function(req, res) {
-    	// Logic to show student here
+    	
+        student.deleteStudent(req);
         res.json({ message: 'Student details from Student Instance 1 deleted!' });
     })
     	// Logic to show student here
@@ -96,12 +109,12 @@ router.route('/student/:student_id')
     .put(function(req, res) {
     	//Logic to update student details here
 
-
-        student.updateStudent(req);
+      student.updateStudent(req);
     	res.json({ message: 'Student updated!' });
 
 
     });
+
 
 
 
@@ -110,37 +123,19 @@ router.route('/coursestudent')
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
 	
-	request({ url : "http://localhost/16390/api/course/" + req.params.course_id,
- 		method : "GET", 	  	
- 	}, function (error, response, body) {
-  if (!error && response.statusCode == 200) {
-  	invokeandProcessResponse(req , function(err, result){
-  	    if(err){
-  	      res.send(500, { error: 'something blew up' });
-  	    } else {
-  	      res.send(result);
-  	    }
-  	  });
-      }
-  else
-  	{
-  	res.json({message : "Course does not exist"});
-  	}
-//Logic to save the student to DB
+  student.addCoursetoStudent(req);
+  res.json({ message: 'Added course to student'});
 
 });
+
 
 router.route('/coursestudent/:course_id/:student_id')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .delete(function(req, res) {
-	invokeandProcessResponse(req , function(err, result){
-	    if(err){
-	      res.send(500, { error: 'something blew up' });
-	    } else {
-	      res.send(result);
-	    }
-	  });
+	
+  student.deleteCourseFromStudent(req);
+    res.json({ message: 'Deleted course from student'});
   });
 
 
