@@ -18,25 +18,27 @@ publisher.on('connect', function() {
 
 
 subscriber.on("message", function(channel, message) {
-
+  console.log("Got message" + message);
 	messageEvent = JSON.parse(message);
-	//console.log(messageEvent);
+	console.log(messageEvent);
 
 	origin_from_message = messageEvent.origin;
 	event_from_message = messageEvent.event;
 
-	//console.log(origin_from_message);
-	//console.log(event_from_message);
+	console.log("Origin-"+  origin_from_message);
+	console.log("Event-" + event_from_message);
 
 	for(var key in arr){
+    console.log("Origin :" + arr[key].origin );
+    console.log("Event :"+ arr[key].event);
 		if((origin_from_message == arr[key].origin) && (event_from_message == arr[key].event)){
 
 			console.log("Origin :" + arr[key].origin );
 			console.log("Inside Redis :"+ arr[key].listener);
-			publisher.publish(arr[key].listener, JSON.stringify(message));
+			publisher.publish(arr[key].listener, JSON.stringify(messageEvent));
 
 			}
-	break;
+
 	}
 	});
 

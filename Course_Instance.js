@@ -9,6 +9,8 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var course = require('./course.js');
 var redis = require('redis');
+var request = require('request');
+
 var config = require('./config_course.json');
 var arr = Object.keys(config).map(function(k) { return config[k] });
 
@@ -124,17 +126,11 @@ subscriber.on('connect', function() {
     console.log('Connected to Subscriber Redis');
 });
 
-var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
-publisher.on('connect', function() {
-    console.log('Connected to Publisher Redis');
-});
-
 subscriber.on("message", function(channel, message) {
   console.log("Message '" + message + "' on channel '" + channel + "' arrived!")
   console.log(message);
   parsedMessage = JSON.parse(message);
   //message event, origin, studentname and coursename
-  var baseUrl = config.baseurl;
   var messageEvent = parsedMessage.event;
   var messageOrigin = parsedMessage.origin;
   var studentLname = parsedMessage.studentLname;
@@ -143,17 +139,17 @@ subscriber.on("message", function(channel, message) {
   for(var key in arr){
 		if(messageEvent == arr[key].event){
       if (arr[key].req_method == "DELETE")
-        url = baseurl + arr[key].publicurl + "/" + studentLname + "/" + courseNo;
+        url = arr[key].publicurl + "/" + studentLname + "/" + courseNo;
       else
-        url = baseurl + arr[key].publicurl;
+        url = arr[key].publicurl;
       request({ url : url,
    		   method : arr[key].req_method,
-   		   json : JSON.stringify(message)
+   		   json : parsedMessage
    	}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-     callback(null, response.body);
+     console.log(response.statusCode);
     } else {
-      callback(error);
+      console.log(response.statusCode);
     }
   });
 }

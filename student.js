@@ -19,7 +19,7 @@ publisher.on('connect', function() {
 exports.addStudent = function(req)
 {
 console.log('Connected to database');
-console.log(req.body.id);
+console.log(req.body.sid);
 var query = client.query("insert into ms_student_tbl values($1, $2, $3, $4, $5, $6, $7)", [req.body.sid, req.body.fname, req.body.lname, req.body.phno, req.body.degree, req.body.year, req.body.address]);
 query.on('end', function(result) {
 console.log("Row successfully inserted");

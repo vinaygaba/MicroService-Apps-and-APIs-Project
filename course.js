@@ -4,11 +4,6 @@ var client = new pg.Client(connectionString);
 var redis = require('redis');
 client.connect();
 
-var subscriber = redis.createClient(6379, 'localhost' , {no_ready_check: true});
-subscriber.on('connect', function() {
-    console.log('Connected to Subscriber Redis');
-});
-
 var publisher = redis.createClient(6379, 'localhost' , {no_ready_check: true});
 publisher.on('connect', function() {
     console.log('Connected to Publisher Redis');
@@ -17,8 +12,7 @@ publisher.on('connect', function() {
 exports.addCourse = function(req)
 {
 console.log('Connected to database');
-console.log(req.body.id);
-console.log(req.query);
+console.log(req.body.cid);
 var query = client.query("insert into ms_course_tbl values($1, $2, $3, $4, $5)", [req.body.cid, req.body.courseno, req.body.prof, req.body.room, req.body.timings]);
 query.on('end', function(result) {
 console.log("Row successfully inserted");
@@ -110,6 +104,7 @@ exports.deleteCourse = function(req)
 
 	var queryForCourse = client.query(queryForCourseDatabase, [courseno]);
 	queryForCourse.on('end', function(result) {
+		console.log("Inside queryforCourse end")
 
 		message =   {
 										"origin":"course" ,

@@ -10,7 +10,7 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var http = require('http');
 var redis = require('redis');
-var config = require('./config_course.json');
+var config = require('./config_student.json');
 var arr = Object.keys(config).map(function(k) { return config[k] });
 
 // configure app to use bodyParser()
@@ -46,50 +46,78 @@ router.get('/', function(req, res) {
 });
 var invokeandProcessResponse = function(req, callback){
 	var instanceToRouteTo;
+  var requestCount = 1;
 	console.log(req.method);
 	var firstCharacterString, firstCharacter;
 	var reqMethod;
 	var bodyParameters;
 	reqMethod = req.method;
 	bodyParameters = req.body;
-	if(req.method == "POST" )
-		{
-			firstCharacterString = bodyParameters['lname'];
+//   if(req.url.split('/')[3] == "all")
+//   {
+//     requestCount = 3;
+//     var instancesArray = ['http://localhost:16386/api','http://localhost:16387/api','http://localhost:16388/api'];
+//     for (var i in instancesArray)
+//     {
+//       console.log(req.url);
+//     console.log('Sending ' +req.method+ ' request to ' + instancesArray[i]);
+//       request({ url : instancesArray[i] + req.url,
+//         method : reqMethod,
+//         json : bodyParameters
+//       }, function (error, response, body) {
+//       if (!error && response.statusCode == 200) {
+//        callback(null, response.body);
+//       } else {
+//         callback(error);
+//       }
+//     });
+//   }
+// }
+  //else {
 
-		}
-	else if (req.method == "GET" || req.method == "PUT" || req.method == "DELETE")
-		{
-			firstCharacterString = req.url.split('/')[2];
-		}
+    if(req.method == "POST" )
+      {
+        firstCharacterString = bodyParameters['lname'];
+      }
+    else if (req.method == "GET" || req.method == "PUT" || req.method == "DELETE")
+      {
+        firstCharacterString = req.url.split('/')[2];
 
-	firstCharacter = firstCharacterString[0];
-	console.log(firstCharacter);
-	if(firstCharacter >= 'A' && firstCharacter <= 'F')
-		{
-			instanceToRouteTo = 'http://localhost:16386/api';
-			instanceToRouteTo += req.url;
-		}
-	else if (firstCharacter >= "G" && firstCharacter <= 'Q')
-		{
-			instanceToRouteTo = 'http://localhost:16387/api';
-			instanceToRouteTo += req.url;
-		}
-	else if (firstCharacter >= 'R' && firstCharacter <= 'Z')
-	{
-		instanceToRouteTo = 'http://localhost:16388/api';
-		instanceToRouteTo += req.url;
-	}
-	console.log('Sending ' +req.method+ ' request to ' + instanceToRouteTo);
-   	request({ url : instanceToRouteTo,
-   		method : reqMethod,
-   		json : bodyParameters
-   	}, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-     callback(null, response.body);
-    } else {
-      callback(error);
+      }
+
+
+    firstCharacter = firstCharacterString[0];
+    console.log(firstCharacter);
+    if(firstCharacter >= 'A' && firstCharacter <= 'F')
+      {
+        instanceToRouteTo = 'http://localhost:16386/api';
+        instanceToRouteTo += req.url;
+      }
+    else if (firstCharacter >= "G" && firstCharacter <= 'Q')
+      {
+        instanceToRouteTo = 'http://localhost:16387/api';
+        instanceToRouteTo += req.url;
+      }
+    else if (firstCharacter >= 'R' && firstCharacter <= 'Z')
+    {
+      instanceToRouteTo = 'http://localhost:16388/api';
+      instanceToRouteTo += req.url;
     }
-  })
+    console.log('Sending ' +req.method+ ' request to ' + instanceToRouteTo);
+      request({ url : instanceToRouteTo,
+        method : reqMethod,
+        json : bodyParameters
+      }, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+       callback(null, response.body);
+      } else {
+        callback(error);
+      }
+    });
+
+
+//  }
+
 }
 // more routes for our API will happen here
 
@@ -164,7 +192,7 @@ router.route('/student/:student_id')
     	    });
 
 
-router.route('/studentcourse')
+router.route('/coursestudent')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
@@ -180,7 +208,7 @@ router.route('/studentcourse')
 });
 
 
-router.route('/studentcourse/:student_id/:course_id')
+router.route('/coursestudent/:courseid/:studentid')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .delete(function(req, res) {
@@ -208,30 +236,37 @@ publisher.on('connect', function() {
 
 subscriber.on("message", function(channel, message) {
   console.log("Message '" + message + "' on channel '" + channel + "' arrived!")
-  console.log(message);
-  parsedMessage = JSON.parse(message);
+  var parsedMessage = JSON.parse(message);
+  console.log(parsedMessage);
   //message event, origin, studentname and coursename
-  var baseUrl = config.baseurl;
   var messageEvent = parsedMessage.event;
   var messageOrigin = parsedMessage.origin;
   var studentLname = parsedMessage.studentLname;
   var courseNo = parsedMessage.courseNo;
-
+  var url;
   for(var key in arr){
+    console.log(arr[key]);
+    console.log(messageEvent);
 		if(messageEvent == arr[key].event){
-      if (arr[key].req_method == "DELETE")
-        url = baseurl + arr[key].publicurl + "/" + courseNo + "/" + studentLname;
-      else {
-        url = baseurl + arr[key].publicurl;
+      console.log(arr[key]);
+      console.log("Message matched");
+      if (arr[key].req_method == "DELETE") {
+        console.log(arr[key].req_method);
+        url = arr[key].publicurl + "/" + courseNo + "/" + studentLname;
       }
+      else {
+        console.log(arr[key].publicurl);
+        url = arr[key].publicurl;
+      }
+      console.log("URL we are going to hit:" + url)
       request({ url : url,
    		   method : arr[key].req_method,
-   		   json : JSON.stringify(message)
+         json : parsedMessage
    	}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-     callback(null, response.body);
+        console.log(response.statusCode);
     } else {
-      callback(error);
+        console.log(response.statusCode);
     }
   });
 }
