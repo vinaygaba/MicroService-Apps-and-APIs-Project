@@ -1,7 +1,18 @@
 var pg = require('pg');
 var connectionString = 'postgres://postgres:postgres@localhost:5433/infinity_course_db';
 var client = new pg.Client(connectionString);
+var redis = require('redis');
 client.connect();
+
+var subscriber = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+subscriber.on('connect', function() {
+    console.log('Connected to Subscriber Redis');
+});
+
+var publisher = redis.createClient(10001, 'localhost' , {no_ready_check: true});
+publisher.on('connect', function() {
+    console.log('Connected to Publisher Redis');
+});
 
 exports.addCourse = function(req)
 {
@@ -9,9 +20,9 @@ console.log('Connected to database');
 console.log(req.body.id);
 console.log(req.query);
 var query = client.query("insert into ms_course_tbl values($1, $2, $3, $4, $5)", [req.body.cid, req.body.courseno, req.body.prof, req.body.room, req.body.timings]);
-query.on('end', function(result) { 
+query.on('end', function(result) {
 console.log("Row successfully inserted");
-	//client.end(); 
+	//client.end();
 });
 }
 
@@ -24,9 +35,18 @@ var lname = req.body.lname;
 var courseno = req.body.courseno;
 
 var query = client.query("insert into ms_student_course_tbl(courseno,lname) values($1, $2)", [courseno,lname]);
-query.on('end', function(result) { 
+query.on('end', function(result) {
+
+	message =   {
+									"origin":"course" ,
+									"event":"student_added_to_course",
+									"studentLname" : lname,
+									"courseNo" : courseno
+							};
+		 console.log(typeof(message.origin));
+		 publisher.publish('RI', JSON.stringify(message));
 console.log("Row successfully inserted");
-	//client.end(); 
+	//client.end();
 });
 }
 
@@ -65,9 +85,9 @@ queryString = queryString + ' where courseno = $1';
 console.log(queryString);
 
 var query = client.query(queryString, [courseno]);
-query.on('end', function(result) { 
+query.on('end', function(result) {
 console.log("Row successfully updated");
-	//client.end(); 
+	//client.end();
 });
 }
 
@@ -85,11 +105,20 @@ exports.deleteCourse = function(req)
 	var queryForStudentCourseDatabase ='Delete from ms_student_course_tbl where courseno = $1';
 
 	var query = client.query(queryForStudentCourseDatabase, [courseno]);
-    query.on('end', function(result) { 
+    query.on('end', function(result) {
 	console.log("Row successfully deleted from relationship table");
 
 	var queryForCourse = client.query(queryForCourseDatabase, [courseno]);
-	queryForCourse.on('end', function(result) { 
+	queryForCourse.on('end', function(result) {
+
+		message =   {
+										"origin":"course" ,
+										"event":"student_removed_from_course",
+										"studentLname" : "all",
+										"courseNo" : courseno
+								};
+			 console.log(typeof(message.origin));
+			 publisher.publish('RI', JSON.stringify(message));
 	console.log("Row successfully deleted from course table");
 	//client.end();
 });
@@ -117,14 +146,18 @@ else
 queryForStudentCourseDatabase = 'Delete from ms_student_course_tbl where lname = $1 and courseno = $2';
 var query = client.query(queryForStudentCourseDatabase, [lname,courseno]);
 }
-	query.on('end', function(result) { 
+	query.on('end', function(result) {
+
+		message =   {
+										"origin":"course" ,
+										"event":"student_removed_from_course",
+										"studentLname" : lname,
+										"courseNo" : courseno
+								};
+			 console.log(typeof(message.origin));
+			 publisher.publish('RI', JSON.stringify(message));
 	console.log("Row successfully deleted from course-student relationship table");
-	//client.end(); 
+	//client.end();
 });
 
 }
-
-
-
-
-
