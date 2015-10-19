@@ -133,13 +133,13 @@ subscriber.on("message", function(channel, message) {
   //message event, origin, studentname and coursename
   var messageEvent = parsedMessage.event;
   var messageOrigin = parsedMessage.origin;
-  var studentLname = parsedMessage.studentLname;
-  var courseNo = parsedMessage.courseNo;
+  var lname = parsedMessage.lname;
+  var courseno = parsedMessage.courseno;
 
   for(var key in arr){
 		if(messageEvent == arr[key].event){
       if (arr[key].req_method == "DELETE")
-        url = arr[key].publicurl + "/" + studentLname + "/" + courseNo;
+        url = arr[key].publicurl + "/" + lname + "/" + courseno;
       else
         url = arr[key].publicurl;
       request({ url : url,

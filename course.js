@@ -135,6 +135,11 @@ exports.deleteStudentFromCourse = function(req)
 var courseno = req.params.course_id;
 var lname = req.params.student_id;
 
+console.log(courseno);
+
+console.log(lname);
+
+
 var queryForStudentCourseDatabase;
 var query;
 var queryForCheckingExistenceOfPair;

@@ -293,9 +293,13 @@ router.route('/course/:course_id')
 router.route('/coursestudent')
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
-	request({ url : "http://localhost/16390/api/course/" + req.params.course_id,
+  console.log(req.body.courseno);
+  console.log("Entered post request");
+	request({ url : "http://localhost:16390/api/course/" + req.body.courseno,
    		      method : "GET",
    	      }, function (error, response, body) {
+            console.log(response);
+            console.log(error);
               if (!error && response.statusCode == 200) {
     	               invokeandProcessResponse(req , function(err, result){
     	                  if(err){
@@ -307,6 +311,7 @@ router.route('/coursestudent')
               }
               else
     	         {
+                 console.log(error);
     	            res.json({message : "Course does not exist"});
     	         }
  //Logic to save the student to DB
@@ -333,7 +338,7 @@ router.route('/studentcourse')
 
 //create a new student (accessed at POST http://localhost:16386/api/student)
 .post(function(req, res) {
-		request({ url : "http://localhost/16385/api/student/" + req.params.student_id,
+		request({ url : "http://localhost:16385/api/student/" + req.body.lname,
    		method : "GET",
    	}, function (error, response, body) {
     if (!error && response.statusCode == 200) {

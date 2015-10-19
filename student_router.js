@@ -77,7 +77,7 @@ var invokeandProcessResponse = function(req, callback){
 
     if(req.method == "POST" )
       {
-        firstCharacterString = bodyParameters['lname'];
+        firstCharacterString = req.body.lname ;
       }
     else if (req.method == "GET" || req.method == "PUT" || req.method == "DELETE")
       {
@@ -241,24 +241,20 @@ subscriber.on("message", function(channel, message) {
   //message event, origin, studentname and coursename
   var messageEvent = parsedMessage.event;
   var messageOrigin = parsedMessage.origin;
-  var studentLname = parsedMessage.studentLname;
-  var courseNo = parsedMessage.courseNo;
+  var lname = parsedMessage.lname;
+  var courseno = parsedMessage.courseno;
   var url;
   for(var key in arr){
-    console.log(arr[key]);
-    console.log(messageEvent);
 		if(messageEvent == arr[key].event){
-      console.log(arr[key]);
-      console.log("Message matched");
+      console.log("Event:" + arr[key].event);
       if (arr[key].req_method == "DELETE") {
         console.log(arr[key].req_method);
-        url = arr[key].publicurl + "/" + courseNo + "/" + studentLname;
+        url = arr[key].publicurl + "/" + courseno + "/" + lname;
       }
       else {
-        console.log(arr[key].publicurl);
         url = arr[key].publicurl;
       }
-      console.log("URL we are going to hit:" + url)
+      console.log("URL we are going to hit:" + url);
       request({ url : url,
    		   method : arr[key].req_method,
          json : parsedMessage
