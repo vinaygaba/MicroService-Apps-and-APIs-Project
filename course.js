@@ -28,6 +28,11 @@ exports.addStudentToCourse = function(req)
 var lname = req.body.lname;
 var courseno = req.body.courseno;
 
+
+var queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_tbl where courseno = $1 and lname = $2", [courseno, lname], function(err, result){
+rowCount = result.rows.length;
+if(rowCount == 0)
+{
 var query = client.query("insert into ms_student_course_tbl(courseno,lname) values($1, $2)", [courseno,lname]);
 query.on('end', function(result) {
 
@@ -41,6 +46,8 @@ query.on('end', function(result) {
 		 publisher.publish('RI', JSON.stringify(message));
 console.log("Row successfully inserted");
 	//client.end();
+});
+}
 });
 }
 
@@ -130,17 +137,27 @@ var lname = req.params.student_id;
 
 var queryForStudentCourseDatabase;
 var query;
+var queryForCheckingExistenceOfPair;
 
 if(courseno == 'all')
 {
 queryForStudentCourseDatabase = 'Delete from ms_student_course_tbl where lname = $1';
 var query = client.query(queryForStudentCourseDatabase, [lname]);
+
+queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_tbl where lname = $1", [lname]);
+
 }
 else
 {
 queryForStudentCourseDatabase = 'Delete from ms_student_course_tbl where lname = $1 and courseno = $2';
 var query = client.query(queryForStudentCourseDatabase, [lname,courseno]);
+
+queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_tbl where courseno = $1 and lname = $2", [courseno, lname]);
 }
+
+queryForCheckingExistenceOfPair.on('row', function(row){
+
+
 	query.on('end', function(result) {
 
 		message =   {
@@ -153,6 +170,7 @@ var query = client.query(queryForStudentCourseDatabase, [lname,courseno]);
 			 publisher.publish('RI', JSON.stringify(message));
 	console.log("Row successfully deleted from course-student relationship table");
 	//client.end();
+});
 });
 
 }

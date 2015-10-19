@@ -32,6 +32,11 @@ exports.addCoursetoStudent = function(req)
 var lname = req.body.lname;
 var courseno = req.body.courseno;
 
+
+var queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_tbl where courseno = $1 and lname = $2", [courseno, lname], function(err, result){
+rowCount = result.rows.length;
+if(rowCount == 0)
+{
 var query = client.query("insert into ms_student_course_tbl values($1, $2)", [lname,courseno]);
 query.on('end', function(result) {
 				message =   {
@@ -43,6 +48,8 @@ query.on('end', function(result) {
 	         console.log(typeof(message.origin));
 	         publisher.publish('RI', JSON.stringify(message));
 console.log("Row successfully inserted");
+});
+}
 });
 }
 
@@ -126,10 +133,28 @@ exports.deleteCourseFromStudent = function(req)
 
 var courseno = req.params.course_id;
 var lname = req.params.student_id;
+var queryForCourseStudentDatabase;
+var query;
 
-var queryForCourseStudentDatabase = 'Delete from ms_student_course_tbl where lname = $1 and courseno = $2';
+var queryForCheckingExistenceOfPair;
 
-var query = client.query(queryForCourseStudentDatabase, [lname,courseno]);
+
+if(lname == 'all')
+{
+    queryForCourseStudentDatabase = 'Delete from ms_student_course_tbl where courseno = $1';
+    query = client.query(queryForCourseStudentDatabase, [courseno]);
+    queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_tbl where courseno = $1", [courseno]);
+}
+else
+{
+	queryForCourseStudentDatabase = 'Delete from ms_student_course_tbl where lname = $1 and courseno = $2';
+	query = client.query(queryForCourseStudentDatabase, [lname,courseno]);
+	queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_tbl where courseno = $1 and lname = $2", [courseno, lname]);
+}
+
+
+queryForCheckingExistenceOfPair.on('row', function(row){
+
 	query.on('end', function(result) {
 
 		message =   {
@@ -142,6 +167,7 @@ var query = client.query(queryForCourseStudentDatabase, [lname,courseno]);
 			 publisher.publish('RI', JSON.stringify(message));
 	console.log("Row successfully deleted");
 	//client.end();
+});
 });
 
 }
