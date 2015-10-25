@@ -39,8 +39,8 @@ query.on('end', function(result) {
 	message =   {
 									"origin":"course" ,
 									"event":"student_added_to_course",
-									"studentLname" : lname,
-									"courseNo" : courseno
+									"lname" : lname,
+									"courseno" : courseno
 							};
 		 console.log(typeof(message.origin));
 		 publisher.publish('RI', JSON.stringify(message));
@@ -116,8 +116,8 @@ exports.deleteCourse = function(req)
 		message =   {
 										"origin":"course" ,
 										"event":"student_removed_from_course",
-										"studentLname" : "all",
-										"courseNo" : courseno
+										"lname" : "all",
+										"courseno" : courseno
 								};
 			 console.log(typeof(message.origin));
 			 publisher.publish('RI', JSON.stringify(message));
@@ -134,6 +134,11 @@ exports.deleteStudentFromCourse = function(req)
 
 var courseno = req.params.course_id;
 var lname = req.params.student_id;
+
+console.log(courseno);
+
+console.log(lname);
+
 
 var queryForStudentCourseDatabase;
 var query;
@@ -162,8 +167,8 @@ queryForCheckingExistenceOfPair.on('row', function(row){
 		message =   {
 										"origin":"course" ,
 										"event":"student_removed_from_course",
-										"studentLname" : lname,
-										"courseNo" : courseno
+										"lname" : lname,
+										"courseno" : courseno
 								};
 			 console.log(typeof(message.origin));
 			 publisher.publish('RI', JSON.stringify(message));

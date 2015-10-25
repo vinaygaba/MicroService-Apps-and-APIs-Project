@@ -126,7 +126,6 @@ exports.deleteStudent = function(req)
 		// 						};
 		// 	 console.log(typeof(message.origin));
 		// 	 publisher.publish('RI', JSON.stringify(message));
-
 	console.log("Row successfully deleted");
 });
 });
