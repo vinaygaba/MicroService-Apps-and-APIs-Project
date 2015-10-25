@@ -157,7 +157,6 @@ queryForCheckingExistenceOfPair = client.query("select * from ms_student_course_
 
 queryForCheckingExistenceOfPair.on('row', function(row){
 
-
 	query.on('end', function(result) {
 
 		message =   {
