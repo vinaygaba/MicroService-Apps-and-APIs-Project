@@ -104,31 +104,6 @@ router.route('/student/:student_id')
     });
 
 
-
-
-router.route('/coursestudent')
-
-//create a new student (accessed at POST http://localhost:16386/api/student)
-.post(function(req, res) {
-
-  student.addCoursetoStudent(req);
-  res.json({ message: 'Added course to student'});
-
-});
-
-
-router.route('/coursestudent/:course_id/:student_id')
-
-//create a new student (accessed at POST http://localhost:16386/api/student)
-.delete(function(req, res) {
-
-  student.deleteCourseFromStudent(req);
-    res.json({ message: 'Deleted course from student'});
-  });
-
-
-
-
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
