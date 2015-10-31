@@ -100,24 +100,6 @@ router.route('/course/:course_id')
 
 
 
-router.route('/studentcourse')
-
-//create a new student (accessed at POST http://localhost:16386/api/student)
-.post(function(req, res) {
-
-          course.addStudentToCourse(req);
-          res.json({message : 'Student added to course!'});
-    });
-
-router.route('/studentcourse/:student_id/:course_id')
-
-
-//create a new student (accessed at POST http://localhost:16386/api/student)
-.delete(function(req, res) {
-
-    course.deleteStudentFromCourse(req);
-    res.json({message : 'Student deleted from course!'});
-	  });
 
 
 // Listening for RI scenes
