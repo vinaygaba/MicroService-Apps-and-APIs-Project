@@ -1,5 +1,5 @@
 var pg = require('pg');
-var connectionString = 'postgres://postgres:postgres@localhost:5433/infinity_student_db';
+var connectionString = 'postgres://postgres:postgres@localhost:5432/infinity_student_db';
 var redis = require('redis');
 var client = new pg.Client(connectionString);
 client.connect();
@@ -29,18 +29,27 @@ exports.getStudentDetails = function(req,res,callback)
 {
 var course_nos = [];
 var responseJson;
+var course_array;
 console.log('Connected to database');
 console.log(req.params.student_id);
 var query = client.query("Select * from ms_student_tbl left outer join ms_student_course_tbl on (ms_student_tbl.lname = ms_student_course_tbl.lname) where ms_student_tbl.lname= $1", [req.params.student_id]);
 query.on('row', function(row) {
 	console.log(row.courseno);
-	console.log(str);
 	course_nos.push(row.courseno);
-	responseJson = "{'fname':"+ row.fname + ", 'lname':" + req.params.student_id + ", 'sid':"+ row.sid + ", 'phno' :" + row.phno + ", 'degree_level':" + row.degree_level + ", 'year' :" + row.year + ", 'address':" + row.address + ", 'course_nos': " + course_nos + "}";
+  if(course_array == undefined)
+  {
+	course_array = row.courseno + ",";
+  }
+  else {
+  course_array += row.courseno + ",";
+  }
+	responseJson = {fname: row.fname ,lname: req.params.student_id, sid: row.sid, phno :  row.phno,degree_level: row.degree_level,year : row.year,address: row.address};
   });
 query.on('end', function(result){
+
+  responseJson.course_nos = course_array.substring(0,course_array.length - 1);
 	console.log(responseJson);
-	res.json(responseJson);
+	res.json(JSON.stringify(responseJson));
 	callback(res);
 });
 }
@@ -49,20 +58,25 @@ query.on('end', function(result){
 exports.updateStudent = function(req)
 {
 
-var course_array=[];
+var course_array;
 var course_no;
 var coursenos = req.body.course_nos.split(',');
 var student_lname = req.params.student_id;
 var prevStudent;
-
-
 var queryToFetchPrevStudent = client.query("Select * from ms_student_tbl left outer join ms_student_course_tbl on (ms_student_tbl.lname = ms_student_course_tbl.lname) where ms_student_tbl.lname= $1", [req.params.student_id]);
 queryToFetchPrevStudent.on('row', function(row) {
-	course_array.push(row.courseno);
-	prevStudent = "{'fname':"+ row.fname + ", 'lname':" + req.params.student_id + ", 'sid':"+ row.sid + ", 'phno' :" + row.phno + ", 'degree_level':" + row.degree_level + ", 'year' :" + row.year + ", 'address':" + row.address + ", 'course_nos': " + course_array + "}";
-  });
+  if(course_array == undefined)
+  {
+	course_array = row.courseno + ",";
+  }
+  else {
+  course_array += row.courseno + ",";
+  }
+	prevStudent = {fname: row.fname ,lname: req.params.student_id, sid: row.sid, phno :  row.phno,degree_level: row.degree_level,year : row.year,address: row.address};
+});
 queryToFetchPrevStudent.on('end', function(result){
 
+prevStudent.course_nos = course_array.substring(0,course_array.length - 1);
 var queryForRelationshipDatabase =  'Delete from ms_student_course_tbl where lname = $1';
 
 	var query = client.query(queryForRelationshipDatabase, [student_lname]);
@@ -87,7 +101,7 @@ message =   {
 										"origin":"student",
 										"event":"student_updated",
 										"prev_student" : prevStudent,
-										"cur_student" : req.body
+										"curr_student" : req.body
 				};
 			 console.log(typeof(message.origin));
 			 publisher.publish('RI', JSON.stringify(message));
@@ -114,7 +128,7 @@ exports.deleteStudent = function(req)
 
 	executedQuery.on('row', function(row) {
     console.log('Row received');
-    coursenos.push(row.course_no);    
+    coursenos.push(row.course_no);
 	});
 	executedQuery.on('end', function () {
 	var queryForStudentDatabase = 'Delete from ms_student_tbl where lname = $1';

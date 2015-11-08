@@ -93,7 +93,7 @@ message =   {
 										"origin":"course",
 										"event":"course_updated",
 										"prev_course" : prevCourse,
-										"cur_course" : req.body
+										"curr_course" : req.body
 				};
 			 console.log(typeof(message.origin));
 			publisher.publish('RI', JSON.stringify(message));
@@ -119,7 +119,7 @@ exports.deleteCourse = function(req)
 
 	executedQuery.on('row', function(row) {
     console.log('Row received');
-    lnames.push(row.lname);    
+    lnames.push(row.lname);
 	});
 	executedQuery.on('end', function () {
 	var queryForCourseDatabase = 'Delete from ms_course_tbl where courseno = $1';
@@ -145,7 +145,3 @@ exports.deleteCourse = function(req)
 });
 });
 }
-
-
-
-

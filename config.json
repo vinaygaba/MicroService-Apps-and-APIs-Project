@@ -1,38 +1,34 @@
 {
-  "course_added_to_student":
+  "course_updated":
 			{
-				"event":"course_added_to_student",
-				"origin": "student",
-				"listener":"course"
+				"event":"course_updated",
+				"origin": "course",
+				"listener":"student",
+				"publicurl":"http://localhost:16385/api/student",
+				"req_method":"GET"
 			}
- , "course_removed_from_student" :
-			 {
-			 	"event":"course_removed_from_student",
-				"origin": "student",
-				"listener":"course"
-			 }
  , "course_removed_from_all":
  			{
 			 	"event":"course_removed_from_all",
 				"origin": "course",
-				"listener":"student"
+				"listener":"student",
+				"publicurl":"http://localhost:16385/api/student",
+				"req_method":"GET"
  			}
- , "student_added_to_course":
+ , "student_updated":
  			{
-				"event":"student_added_to_course",
-				"origin": "course",
-				"listener":"student"
-			}
- , "student_removed_from_course":
-			{
-				"event":"student_removed_from_course",
-				"origin": "course",
-				"listener":"student"
+				"event":"student_updated",
+				"origin": "student",
+				"listener":"course",
+				"publicurl":"http://localhost:16390/api/course",
+				"req_method":"GET"
 			}
  , "student_removed_from_all":
  			{
 				"event":"student_removed_from_all",
 				"origin": "student",
-				"listener":"course"
+				"listener":"course",
+				"publicurl":"http://localhost:16390/api/course",
+				"req_method":"GET"
 			}
 }

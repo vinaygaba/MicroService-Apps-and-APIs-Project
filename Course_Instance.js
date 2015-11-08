@@ -113,20 +113,23 @@ subscriber.on("message", function(channel, message) {
   console.log(message);
   parsedMessage = JSON.parse(message);
   //message event, origin, studentname and coursename
+  // var messageEvent = parsedMessage.event;
+  // var courseDetails = parsedMessage.courseDetails;
+  // var oldStudentList = courseDetails.studentList;
+  // var newStudent = parsedMessage.studentToBeUpdated;
+  // courseDetails.studentList = updatedStudentList(oldStudentList , newStudent);
   var messageEvent = parsedMessage.event;
-  var messageOrigin = parsedMessage.origin;
-  var lname = parsedMessage.lname;
+  delete parsedMessage.event;
+  var courseDetails = parsedMessage;
   var courseno = parsedMessage.courseno;
 
   for(var key in arr){
 		if(messageEvent == arr[key].event){
-      if (arr[key].req_method == "DELETE")
-        url = arr[key].publicurl + "/" + lname + "/" + courseno;
-      else
-        url = arr[key].publicurl;
-      request({ url : url,
-   		   method : arr[key].req_method,
-   		   json : parsedMessage
+      if (arr[key].req_method == "PUT")
+        url = arr[key].publicurl + "/" + courseno;
+        request({ url : url,
+   		    method : arr[key].req_method,
+   		    json : parsedMessage
    	}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
      console.log(response.statusCode);
